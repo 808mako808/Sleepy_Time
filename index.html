@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sleepy Time</title>
+    <style>
+      :root {
+        --bg: #0f2740;
+        --card: rgba(255, 255, 255, 0.92);
+        --ink: #132a40;
+        --muted: #52667a;
+        --accent: #2e6c96;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(119, 186, 219, 0.35), transparent 22%),
+          radial-gradient(circle at 80% 18%, rgba(255, 234, 177, 0.18), transparent 16%),
+          linear-gradient(180deg, #173553 0%, var(--bg) 100%);
+        color: #f7fbff;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(720px, 100%);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 28px;
+        padding: 36px 28px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2.2rem, 6vw, 4rem);
+        line-height: 1;
+      }
+
+      p {
+        font-size: 1.08rem;
+        line-height: 1.7;
+      }
+
+      .links {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+      }
+
+      a {
+        display: inline-block;
+        padding: 12px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: white;
+        background: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>Sleepy Time</h1>
+        <p>
+          Sleepy Time is a simple Alexa skill that starts a sleep audio track on
+          supported Alexa devices.
+        </p>
+        <div class="links">
+          <a href="./privacy.html">Privacy Policy</a>
+          <a href="./terms.html">Terms of Use</a>
+        </div>
+      </section>
+    </main>
+  </body>
+  </html>
