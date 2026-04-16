@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Set Up Let's Sleep</title>
+    <style>
+      :root {
+        --bg: #10253b;
+        --card: #ffffff;
+        --ink: #142c44;
+        --muted: #5a6e80;
+        --accent: #2d719c;
+        --accent-dark: #1d5678;
+        --border: #d8e4ec;
+        --danger: #9b2c2c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(111, 177, 211, 0.4), transparent 22%),
+          radial-gradient(circle at 82% 12%, rgba(246, 229, 169, 0.16), transparent 14%),
+          linear-gradient(180deg, #173653 0%, var(--bg) 100%);
+        color: var(--ink);
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 28px 18px;
+      }
+
+      .card {
+        width: min(760px, 100%);
+        background: var(--card);
+        border-radius: 28px;
+        padding: 34px 26px;
+        box-shadow: 0 26px 64px rgba(0, 0, 0, 0.24);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        line-height: 1;
+      }
+
+      p,
+      label,
+      input,
+      button {
+        font-size: 1.04rem;
+      }
+
+      p {
+        line-height: 1.65;
+      }
+
+      label {
+        display: block;
+        margin: 18px 0 8px;
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 13px;
+        font-family: inherit;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        margin-top: 18px;
+        padding: 13px 20px;
+        color: white;
+        background: var(--accent);
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: var(--accent-dark);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .result {
+        display: none;
+        margin-top: 24px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 20px;
+        background: #f7fbfd;
+      }
+
+      .code {
+        display: inline-block;
+        margin: 8px 0;
+        padding: 10px 16px;
+        border-radius: 16px;
+        background: #e7f2f8;
+        color: var(--accent-dark);
+        font-size: clamp(2rem, 8vw, 4rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .error {
+        display: none;
+        margin-top: 16px;
+        color: var(--danger);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>Set Up Let's Sleep</h1>
+        <p class="muted">
+          Paste your public Dropbox audio link below. This page will create a
+          six digit setup code that you can say to Alexa.
+        </p>
+        <form id="setup-form">
+          <label for="audio-url">Dropbox audio link</label>
+          <input
+            id="audio-url"
+            name="audioUrl"
+            type="url"
+            placeholder="https://www.dropbox.com/scl/fi/..."
+            required
+          >
+          <label for="audio-title">Track title</label>
+          <input
+            id="audio-title"
+            name="audioTitle"
+            type="text"
+            value="Let's Sleep"
+            maxlength="80"
+          >
+          <button type="submit">Create Setup Code</button>
+        </form>
+        <p id="error" class="error"></p>
+        <div id="result" class="result">
+          <p>Your setup code is:</p>
+          <div id="code" class="code"></div>
+          <p>
+            Now say:
+            <strong>Alexa, ask Let's Sleep to setup code <span id="spoken-code"></span></strong>
+          </p>
+          <p class="muted">This code expires in 15 minutes and can be used once.</p>
+        </div>
+        <p><a href="./privacy.html">Privacy Policy</a></p>
+      </section>
+    </main>
+    <script>
+      const SETUP_API_BASE_URL = "https://lets-sleep-setup.croons-gurgle6r.workers.dev";
+
+      const form = document.querySelector("#setup-form");
+      const error = document.querySelector("#error");
+      const result = document.querySelector("#result");
+      const code = document.querySelector("#code");
+      const spokenCode = document.querySelector("#spoken-code");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        error.style.display = "none";
+        result.style.display = "none";
+
+        if (SETUP_API_BASE_URL.includes("REPLACE-WITH-YOUR-WORKER")) {
+          error.textContent = "Setup service URL has not been configured yet.";
+          error.style.display = "block";
+          return;
+        }
+
+        const formData = new FormData(form);
+        const payload = {
+          audioUrl: formData.get("audioUrl"),
+          audioTitle: formData.get("audioTitle") || "Let's Sleep",
+        };
+
+        try {
+          const response = await fetch(`${SETUP_API_BASE_URL}/api/setup`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || "Could not create setup code.");
+          }
+
+          code.textContent = data.code;
+          spokenCode.textContent = data.code.split("").join(" ");
+          result.style.display = "block";
+        } catch (setupError) {
+          error.textContent = setupError.message;
+          error.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>
